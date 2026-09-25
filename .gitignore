@@ -5,3 +5,4 @@ LocalDrop_Recibidos/
 .DS_Store
 *.log
 .env
+*.zip
