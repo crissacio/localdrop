@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <title>Local Drop - Enviar</title>
+    <style>
+        :root {
+            --bg: #090d16;
+            --card: #131c31;
+            --accent: #6366f1;
+            --accent-hover: #4f46e5;
+            --text: #f8fafc;
+            --text-muted: #94a3b8;
+            --border: #1e293b;
+            --success: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, -apple-system, sans-serif; }
+        body { background-color: var(--bg); color: var(--text); min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 12px; }
+        .container { width: 100%; max-width: 380px; background: var(--card); border: 1px solid var(--border); border-radius: 18px; padding: 18px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); text-align: center; }
+        h1 { font-size: 1.2rem; margin-bottom: 4px; }
+        p { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 16px; }
+        
+        .dropzone { 
+            border: 2px dashed var(--border); 
+            border-radius: 14px; 
+            padding: 20px 10px; 
+            cursor: pointer; 
+            background: rgba(255,255,255,0.01); 
+            display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%; 
+        }
+        .dropzone svg { width: 36px; height: 36px; stroke: var(--accent); margin-bottom: 6px; }
+        
+        .btn { display: inline-block; background: var(--accent); color: white; padding: 10px 16px; border-radius: 10px; font-weight: 600; border: none; cursor: pointer; width: 100%; margin-top: 14px; font-size: 0.9rem; }
+        .btn:hover { background: var(--accent-hover); }
+        .btn:disabled { background: var(--border); color: var(--text-muted); cursor: not-allowed; }
+        
+        #file-list { margin-top: 12px; text-align: left; max-height: 100px; overflow-y: auto; font-size: 0.75rem; color: var(--text-muted); background: rgba(0,0,0,0.2); padding: 8px; border-radius: 6px; }
+        .progress-container { width: 100%; background: var(--border); border-radius: 6px; height: 6px; margin-top: 14px; overflow: hidden; display: none; }
+        .progress-bar { width: 0%; height: 100%; background: var(--accent); }
+        .status { margin-top: 10px; font-size: 0.8rem; font-weight: 500; }
+
+        #pin-gate { display: flex; flex-direction: column; gap: 10px; }
+        #main-content { display: none; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Local Drop</h1>
+        <p>Transferencia inalámbrica cifrada</p>
+
+        <!-- Bloque de PIN -->
+        <div id="pin-gate">
+            <div id="pin-alert-box" style="background: rgba(245, 158, 11, 0.1); border: 1px solid var(--warning); padding: 10px; border-radius: 10px; font-size: 0.8rem; color: var(--warning); margin-bottom: 6px;">
+                🔒 Red pública protegida. Ingresá el PIN de 6 dígitos de la PC.
+            </div>
+            <input type="text" id="mobile-pin-input" maxlength="6" placeholder="PIN de 6 dígitos" style="width: 100%; padding: 12px; background: rgba(0,0,0,0.3); border: 1px solid var(--border); color: white; border-radius: 10px; text-align: center; font-size: 1.2rem; letter-spacing: 4px;">
+            <button class="btn" onclick="verifyMobilePin()">Verificar y Acceder</button>
+            <div id="pin-error" style="color: var(--danger); font-size: 0.75rem; margin-top: 6px; display: none;">PIN incorrecto. Intentá de nuevo.</div>
+        </div>
+
+        <!-- Contenido principal -->
+        <div id="main-content">
+            <label class="dropzone">
+                <svg fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" viewBox="0 0 24 24"><path d="M12 16.5V7.5M12 7.5L8.5 11M12 7.5L15.5 11M3 16.5V18a1.5 1.5 0 001.5 1.5h15A1.5 1.5 0 0021 18v-1.5"/></svg>
+                <div style="font-weight: 500; font-size: 0.85rem;">Tocá para elegir archivos</div>
+                <div style="font-size: 0.7rem; color: var(--text-muted);">Fotos, videos, audios o documentos</div>
+                <input type="file" id="file-input" multiple style="display: none;">
+            </label>
+
+            <div id="file-list"></div>
+            <div class="progress-container" id="progress-container">
+                <div class="progress-bar" id="progress-bar"></div>
+            </div>
+            <div class="status" id="status"></div>
+            <button class="btn" id="send-btn" style="display: none;" onclick="uploadFiles()">Enviar a la Computadora</button>
+        </div>
+    </div>
+
+    <script>
+        const fileInput = document.getElementById('file-input');
+        const fileListDiv = document.getElementById('file-list');
+        const sendBtn = document.getElementById('send-btn');
+        const progressContainer = document.getElementById('progress-container');
+        const progressBar = document.getElementById('progress-bar');
+        const statusDiv = document.getElementById('status');
+        
+        let selectedFiles = [];
+        let currentNetworkMode = 'domestic';
+        let hasVerifiedInPublic = false;
+
+        window.addEventListener('DOMContentLoaded', checkServerStatus);
+        setInterval(checkServerStatus, 3000);
+
+        async function checkServerStatus() {
+            try {
+                const res = await fetch('/api/status', { cache: 'no-store' });
+                if (!res.ok) return;
+                const data = await res.json();
+                
+                const previousMode = currentNetworkMode;
+                currentNetworkMode = data.networkMode;
+                const savedPin = sessionStorage.getItem('localdrop_pin');
+
+                if (currentNetworkMode === 'domestic') {
+                    // Modo Doméstico: pasa directo siempre, limpia cualquier pin
+                    hasVerifiedInPublic = false;
+                    sessionStorage.removeItem('localdrop_pin');
+                    showMainContent();
+                } else {
+                    // Modo Público
+                    if (!savedPin) {
+                        // Si no hay PIN en sesión, pedimos PIN obligatoriamente
+                        showPinGate("🔒 Red pública protegida. Ingresá el PIN de 6 dígitos que muestra la PC.");
+                    } else {
+                        // Si ya tenemos PIN guardado en la sesión de esta pestaña, dejamos pasar directo
+                        showMainContent();
+                    }
+
+                    // Si la PC cambió a público mientras estábamos abiertos en doméstico, forzamos pedir PIN si no hay uno válido
+                    if (previousMode === 'domestic' && !savedPin) {
+                        showPinGate("🔒 La PC cambió a Modo Público. Ingresá el PIN:");
+                    }
+                }
+            } catch(e) {
+                // Si falla la red temporalmente pero estábamos en doméstico, no bloqueamos
+                if (currentNetworkMode === 'domestic') {
+                    showMainContent();
+                }
+            }
+        }
+
+        function showPinGate(msg) {
+            if(msg) document.getElementById('pin-alert-box').textContent = msg;
+            // Solo mostramos el gate si estamos en la pantalla principal y no hay pin guardado
+            if (!sessionStorage.getItem('localdrop_pin') || currentNetworkMode === 'public' && document.getElementById('main-content').style.display !== 'block') {
+                document.getElementById('pin-gate').style.display = 'flex';
+                document.getElementById('main-content').style.display = 'none';
+            }
+        }
+
+        function showMainContent() {
+            document.getElementById('pin-gate').style.display = 'none';
+            document.getElementById('main-content').style.display = 'block';
+        }
+
+        async function verifyMobilePin() {
+            const pinVal = document.getElementById('mobile-pin-input').value.trim();
+            const errorDiv = document.getElementById('pin-error');
+            
+            if(pinVal.length !== 6) {
+                errorDiv.textContent = "El PIN debe tener 6 dígitos.";
+                errorDiv.style.display = 'block';
+                return;
+            }
+
+            try {
+                const res = await fetch(`/api/verify-pin?pin=${pinVal}`, { cache: 'no-store' });
+                const data = await res.json();
+                
+                if (!data.valid) {
+                    errorDiv.textContent = data.error || "PIN incorrecto. Intentá de nuevo.";
+                    errorDiv.style.display = 'block';
+                    return;
+                }
+
+                sessionStorage.setItem('localdrop_pin', pinVal);
+                errorDiv.style.display = 'none';
+                showMainContent();
+            } catch(e) {
+                errorDiv.textContent = "Error de conexión con el servidor.";
+                errorDiv.style.display = 'block';
+            }
+        }
+
+        fileInput.addEventListener('change', (e) => {
+            selectedFiles = Array.from(e.target.files);
+            renderFileList();
+        });
+
+        function renderFileList() {
+            if (selectedFiles.length === 0) {
+                fileListDiv.innerHTML = '';
+                sendBtn.style.display = 'none';
+                return;
+            }
+            fileListDiv.innerHTML = `<b>Seleccionados (${selectedFiles.length}):</b><br>` + 
+                selectedFiles.map(f => `• ${f.name} (${(f.size/1024/1024).toFixed(1)} MB)`).join('<br>');
+            sendBtn.style.display = 'block';
+        }
+
+        function uploadFiles() {
+            if (selectedFiles.length === 0) return;
+            
+            const currentPin = sessionStorage.getItem('localdrop_pin') || '';
+
+            const formData = new FormData();
+            selectedFiles.forEach(file => formData.append('files', file));
+
+            sendBtn.style.display = 'none';
+            fileInput.disabled = true;
+            progressContainer.style.display = 'block';
+            statusDiv.textContent = 'Enviando...';
+            statusDiv.style.color = 'var(--text)';
+
+            const xhr = new XMLHttpRequest();
+            
+            const uploadUrl = currentNetworkMode === 'public' 
+                ? `/upload?pin=${currentPin}` 
+                : `/upload`;
+
+            xhr.open('POST', uploadUrl, true);
+            
+            if (currentNetworkMode === 'public') {
+                xhr.setRequestHeader('x-local-drop-pin', currentPin);
+            }
+
+            xhr.upload.onprogress = (e) => {
+                if (e.lengthComputable) {
+                    const percent = (e.loaded / e.total) * 100;
+                    progressBar.style.width = percent + '%';
+                    statusDiv.textContent = `Enviando... ${Math.round(percent)}%`;
+                }
+            };
+
+            xhr.onload = () => {
+                if (xhr.status === 401 || xhr.status === 403 || xhr.status === 429) {
+                    let errMessage = "⚠️ PIN incorrecto o expirado.";
+                    try {
+                        const resJSON = JSON.parse(xhr.responseText);
+                        if(resJSON.error) errMessage = "⚠️ " + resJSON.error;
+                    } catch(err){}
+
+                    alert(errMessage);
+                    sessionStorage.removeItem('localdrop_pin');
+                    showPinGate("🔒 Ingresá el PIN nuevamente:");
+                    
+                    fileInput.disabled = false;
+                    progressContainer.style.display = 'none';
+                    statusDiv.textContent = '';
+                    return;
+                }
+
+                if (xhr.status === 200) {
+                    statusDiv.style.color = '#10b981';
+                    statusDiv.textContent = '¡Enviado con éxito!';
+                    fileListDiv.innerHTML = '';
+                    selectedFiles = [];
+                } else {
+                    statusDiv.style.color = '#ef4444';
+                    statusDiv.textContent = 'Error en la transferencia.';
+                    sendBtn.style.display = 'block';
+                }
+                fileInput.disabled = false;
+            };
+
+            xhr.onerror = () => {
+                statusDiv.style.color = '#ef4444';
+                statusDiv.textContent = 'Error de red.';
+                sendBtn.style.display = 'block';
+                fileInput.disabled = false;
+            };
+
+            xhr.send(formData);
+        }
+    </script>
+</body>
+</html>
