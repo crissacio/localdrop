@@ -3,17 +3,17 @@
 # Local Drop
 ### Transferencia inalámbrica de archivos local, rápida, privada y sin configurar nada.
 
-<!-- Botones de descarga directa para cada SO con los enlaces actualizados -->
+<!-- Botones de descarga directa para cada SO con los enlaces de tus releases -->
 <p>
-  <a href="https://github.com/crissacio/localdrop/releases/download/v1.0.0/Jose%20LocalDropWindows.zip">
+  <a href="https://github.com/crissacio/localdrop/releases/download/v1.0_Windows/LocalDropWindows.zip">
     <img src="https://img.shields.io/badge/Windows-Descargar_ZIP-0078D6?style=for-the-badge&logo=windows&logoColor=white" alt="Descargar Windows">
   </a>
   &nbsp;&nbsp;
-  <a href="https://github.com/crissacio/localdrop/releases/download/v1.0.0/Jose%20LocalDropMac.zip">
+  <a href="https://github.com/crissacio/localdrop/releases/download/v1.0_Mac/LocalDropMac.zip">
     <img src="https://img.shields.io/badge/macOS-Descargar_ZIP-000000?style=for-the-badge&logo=apple&logoColor=white" alt="Descargar Mac">
   </a>
   &nbsp;&nbsp;
-  <a href="https://github.com/crissacio/localdrop/releases/download/v1.0.0/Jose%20LocalDropLinux.zip">
+  <a href="https://github.com/crissacio/localdrop/releases/download/v1.0_Linux/LocalDropLinux.zip">
     <img src="https://img.shields.io/badge/Linux-Descargar_ZIP-FCC624?style=for-the-badge&logo=linux&logoColor=black" alt="Descargar Linux">
   </a>
 </p>
