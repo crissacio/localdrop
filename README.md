@@ -3,18 +3,18 @@
 # Local Drop
 ### Transferencia inalámbrica de archivos local, rápida, privada y sin configurar nada.
 
-<!-- Botones de descarga directa para cada SO con los enlaces de tus releases -->
+<!-- Botones de descarga directa para los ejecutables independientes por SO -->
 <p>
-  <a href="https://github.com/crissacio/localdrop/releases/download/v1.0_Windows/LocalDropWindows.zip">
-    <img src="https://img.shields.io/badge/Windows-Descargar_ZIP-0078D6?style=for-the-badge&logo=windows&logoColor=white" alt="Descargar Windows">
+  <a href="https://github.com/crissacio/localdrop/releases/download/v1.0_Windows/localdrop-win.exe">
+    <img src="https://img.shields.io/badge/Windows-Descargar_.exe-0078D6?style=for-the-badge&logo=windows&logoColor=white" alt="Descargar Windows">
   </a>
   &nbsp;&nbsp;
-  <a href="https://github.com/crissacio/localdrop/releases/download/v1.0_Mac/LocalDropMac.zip">
-    <img src="https://img.shields.io/badge/macOS-Descargar_ZIP-000000?style=for-the-badge&logo=apple&logoColor=white" alt="Descargar Mac">
+  <a href="https://github.com/crissacio/localdrop/releases/download/v1.0_Mac/localdrop-mac">
+    <img src="https://img.shields.io/badge/macOS-Descargar_Binario-000000?style=for-the-badge&logo=apple&logoColor=white" alt="Descargar Mac">
   </a>
   &nbsp;&nbsp;
-  <a href="https://github.com/crissacio/localdrop/releases/download/v1.0_Linux/LocalDropLinux.zip">
-    <img src="https://img.shields.io/badge/Linux-Descargar_ZIP-FCC624?style=for-the-badge&logo=linux&logoColor=black" alt="Descargar Linux">
+  <a href="https://github.com/crissacio/localdrop/releases/download/v1.0_Linux/localdrop-linux">
+    <img src="https://img.shields.io/badge/Linux-Descargar_Binario-FCC624?style=for-the-badge&logo=linux&logoColor=black" alt="Descargar Linux">
   </a>
 </p>
 
@@ -24,10 +24,9 @@
 
 ## 🚀 Cómo empezar en 1 minuto
 
-1. **Descargá** el archivo comprimido correspondiente a tu sistema operativo haciendo clic en los botones de arriba.
-2. **Descomprimilo** en tu computadora.
-3. **Ejecutá** el archivo arrancador (`.bat`, `.command` o `.sh`) que viene adentro.
-4. Se abrirá automáticamente el panel en tu navegador con un código QR. ¡Escanealo con tu celular y empezá a enviar archivos!
+1. **Descargá** el archivo ejecutable correspondiente a tu sistema operativo haciendo clic en los botones de arriba (no requiere instalación ni Node.js).
+2. **Ejecutalo** directamente en tu computadora (en la oficina o en casa).
+3. Se abrirá automáticamente el panel en tu navegador con un código QR. ¡Escanealo con tu celular y empezá a enviar archivos!
 
 ---
 
@@ -40,7 +39,7 @@ Todos los archivos, fotos, audios o videos que envíes desde tu celular se desca
 <summary><b>🛠️ Sección Técnica y Detalles para Desarrolladores (Hacé clic para expandir)</b></summary>
 
 ## 🚀 ¿Qué es Local Drop?
-Es una herramienta web ligera basada en Node.js y Express para transferir contenido de forma totalmente local, sin depender de la nube ni exponer datos a servidores externos, garantizando máxima privacidad mediante un sistema de tokens de sesión efímeros y cifrado de red.
+Es una herramienta web ligera empaquetada como binario autónomo para transferir contenido de forma totalmente local, sin depender de la nube ni exponer datos a servidores externos, garantizando máxima privacidad mediante un sistema de tokens de sesión efímeros y cifrado de red.
 
 ## ✨ Características Técnicas
 * 📡 **Arquitectura de Red Local:** Funciona 100% mediante Wi-Fi local utilizando sockets y endpoints HTTP rápidos.
@@ -50,7 +49,7 @@ Es una herramienta web ligera basada en Node.js y Express para transferir conten
 * 📦 **Gestión de Carga:** Procesamiento de archivos mediante `multer`, almacenamiento en buffer optimizado y empaquetado dinámico en ZIP con `archiver`.
 
 ## 🛠️ Requisitos Previos (Para ejecución manual / clonado de repositorio)
-Si preferís clonar el repositorio en lugar de usar los ZIPs listos para usar, asegurate de tener instalado:
+Si preferís clonar el repositorio y correrlo desde el código fuente en lugar de usar los ejecutables listos, asegurate de tener instalado:
 1. **Node.js** (versión 16 o superior).
 2. Dependencias del proyecto (`npm install`).
 
