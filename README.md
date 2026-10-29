@@ -9,8 +9,8 @@
     <img src="https://img.shields.io/badge/Windows-Descargar_.exe-0078D6?style=for-the-badge&logo=windows&logoColor=white" alt="Descargar Windows">
   </a>
   &nbsp;&nbsp;
-  <a href="https://github.com/crissacio/localdrop/releases/download/v1.0_Mac/localdrop-mac">
-    <img src="https://img.shields.io/badge/macOS-Descargar_Binario-000000?style=for-the-badge&logo=apple&logoColor=white" alt="Descargar Mac">
+  <a href="https://github.com/crissacio/localdrop/releases/download/v1.0_Mac/localdrop-mac.zip">
+    <img src="https://img.shields.io/badge/macOS-Descargar_.zip-000000?style=for-the-badge&logo=apple&logoColor=white" alt="Descargar Mac">
   </a>
   &nbsp;&nbsp;
   <a href="https://github.com/crissacio/localdrop/releases/download/v1.0_Linux/localdrop-linux">
@@ -24,14 +24,25 @@
 
 ## 🚀 Cómo empezar en 1 minuto
 
-1. **Descargá** el archivo ejecutable correspondiente a tu sistema operativo haciendo clic en los botones de arriba (no requiere instalación ni Node.js).
-2. **Ejecutalo** directamente en tu computadora (en la oficina o en casa).
-3. Se abrirá automáticamente el panel en tu navegador con un código QR. ¡Escanealo con tu celular y empezá a enviar archivos!
+1. **Descargá** el archivo de tu sistema operativo con los botones de arriba (no requiere instalación ni Node.js).
+2. **Ejecutalo** con doble clic. Se abre una ventana de terminal (es el servidor: no la cierres mientras lo uses) y **automáticamente se abre el panel en tu navegador** con el código QR.
+3. Escaneá el QR con tu celular y empezá a enviar archivos.
+
+### 🍎 En Mac (primera vez)
+1. Descomprimí `localdrop-mac.zip` (doble clic) → aparece `LocalDrop.command`.
+2. Hacé **clic derecho → Abrir → Abrir** (macOS bloquea apps descargadas sin firmar; esto se hace solo la primera vez). Si no aparece la opción, andá a *Configuración del Sistema → Privacidad y seguridad → Abrir igualmente*.
+3. En Mac con chip Apple (M1/M2/M3/M4) puede pedirte instalar *Rosetta*: aceptá.
+
+### 🪟 En Windows (primera vez)
+Si aparece *"Windows protegió su PC"*, tocá **Más información → Ejecutar de todas formas**. Si el Firewall pregunta, permití el acceso en **redes privadas** (sin eso el celular no se puede conectar).
 
 ---
 
 ## 📂 ¿Dónde se guardan los archivos?
-Todos los archivos, fotos, audios o videos que envíes desde tu celular se descargan de forma automática en una carpeta llamada **`LocalDrop_Recibidos`** ubicada directamente en el **Escritorio (Desktop)** de tu computadora.
+Por defecto en la carpeta **`Descargas/LocalDrop`** de la computadora que ejecuta Local Drop.
+Desde el panel podés tocar **"Cambiar carpeta"** para elegir cualquier otra carpeta de esa computadora (se abre el selector de carpetas del sistema). La elección se recuerda para la próxima vez. Con **"Abrir carpeta"** la abrís directamente.
+
+Los archivos quedan guardados aunque cierres Local Drop: nunca se borra nada de tu carpeta.
 
 ---
 

@@ -150,8 +150,17 @@
             <div class="card">
                 <h2 style="font-size: 0.95rem; margin-bottom: 4px;">Archivos Recibidos</h2>
                 <p style="font-size: 0.7rem; color: var(--text-muted); margin-bottom: 10px;">
-                    Ordenados por llegada. Al salir, todo se borra del servidor.
+                    Ordenados por llegada. Se guardan directamente en la carpeta elegida.
                 </p>
+
+                <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin-bottom:12px; padding:10px; border:1px solid var(--border); border-radius:10px; background:rgba(0,0,0,0.2);">
+                    <div style="flex:1; min-width:180px; font-size:0.75rem;">
+                        <div style="color: var(--text-muted);">📂 Guardando en:</div>
+                        <div id="save-dir" style="word-break:break-all; font-weight:600; margin-top:2px;">Cargando...</div>
+                    </div>
+                    <button class="btn" id="btn-pick-folder" onclick="pickFolder()" style="font-size:0.75rem;">Cambiar carpeta</button>
+                    <button class="btn btn-secondary" onclick="openFolder()" style="font-size:0.75rem;">Abrir carpeta</button>
+                </div>
 
                 <div style="display: flex; gap: 6px; margin-bottom: 10px; flex-wrap: wrap;">
                     <button class="btn-filter active" onclick="setFilter('all')">Todos</button>
@@ -208,7 +217,8 @@
                 <div><b>1. Conectá:</b> Escaneá el QR con tu celu/tablet o copiá el enlace.</div>
                 <div><b>2. Redes:</b> Usá <i>Doméstica</i> o activá <i>Pública</i> para pedir PIN de 6 dígitos.</div>
                 <div><b>3. Gestioná:</b> Los archivos llegan ordenados. Podés filtrarlos o marcarlos para descargarlos.</div>
-                <div><b>4. Salí:</b> Hacé clic en <b>Salir</b> para apagar el servidor y borrar todo rastro.</div>
+                <div><b>4. Carpeta:</b> Con <b>Cambiar carpeta</b> elegís dónde se guardan los archivos en esta PC (se recuerda para la próxima vez).</div>
+                <div><b>5. Salí:</b> Hacé clic en <b>Salir</b> para apagar el servidor. Tus archivos quedan guardados.</div>
             </div>
             <button class="btn" style="margin-top: 12px; width: 100%;" onclick="closeModal('tutorial-modal')">¡Entendido!</button>
         </div>
@@ -297,6 +307,10 @@
             }
         }
 
+        function escapeHtml(str) {
+            return String(str).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+        }
+
         function getFileType(filename) {
             const ext = filename.split('.').pop().toLowerCase();
             if (['jpg', 'jpeg', 'png', 'gif', 'webp', 'heic'].includes(ext)) return 'image';
@@ -345,6 +359,8 @@
                     qrInitialized = true;
                 }
 
+                if (data.saveDir) document.getElementById('save-dir').textContent = data.saveDir;
+
                 renderFiles(data.files);
             } catch (e) {
                 console.error('Error sincronizando', e);
@@ -386,11 +402,11 @@
 
                 html += `
                     <tr>
-                        <td><input type="checkbox" class="file-checkbox" value="${f.filename}" ${isChecked} onchange="updateSelectedCount()"></td>
-                        <td><b>${f.originalName}</b></td>
+                        <td><input type="checkbox" class="file-checkbox" value="${escapeHtml(f.filename)}" ${isChecked} onchange="updateSelectedCount()"></td>
+                        <td><b>${escapeHtml(f.originalName)}</b></td>
                         <td><span style="font-size: 0.7rem; color: var(--text-muted);">${typeBadge}</span></td>
                         <td>${sizeMb} MB</td>
-                        <td style="text-align: right;"><a class="btn" href="/download/${f.filename}?token=${token}">Descargar</a></td>
+                        <td style="text-align: right;"><a class="btn" href="/download/${encodeURIComponent(f.filename)}?token=${token}">Descargar</a></td>
                     </tr>
                 `;
             });
@@ -422,7 +438,7 @@
         function downloadSelected() {
             document.querySelectorAll('.file-checkbox:checked').forEach(cb => {
                 const a = document.createElement('a');
-                a.href = `/download/${cb.value}?token=${token}`;
+                a.href = `/download/${encodeURIComponent(cb.value)}?token=${token}`;
                 a.download = cb.value;
                 document.body.appendChild(a);
                 a.click();
@@ -444,9 +460,30 @@
         function closeModal(id) { document.getElementById(id).style.display = 'none'; }
 
         function closeSession() {
-            if (confirm('¿Seguro que querés salir? Se apagará el servidor y se borrarán los archivos.')) {
+            if (confirm('¿Seguro que querés salir? Se apagará el servidor (tus archivos quedan guardados en la carpeta).')) {
                 window.location.href = `/shutdown?token=${token}`;
             }
+        }
+
+        async function pickFolder() {
+            const btn = document.getElementById('btn-pick-folder');
+            btn.disabled = true;
+            btn.textContent = 'Elegí en la ventana...';
+            try {
+                const res = await fetch(`/api/pick-folder?token=${token}`, { method: 'POST' });
+                const data = await res.json();
+                if (data.error) alert(data.error);
+                if (data.saveDir) document.getElementById('save-dir').textContent = data.saveDir;
+            } catch (e) {
+                alert('No se pudo abrir el selector de carpeta.');
+            } finally {
+                btn.disabled = false;
+                btn.textContent = 'Cambiar carpeta';
+            }
+        }
+
+        function openFolder() {
+            fetch(`/api/open-folder?token=${token}`, { method: 'POST' });
         }
 
         setInterval(fetchStatus, 2000);
