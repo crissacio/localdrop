@@ -5,15 +5,15 @@
 
 <!-- Botones de descarga directa para los ejecutables independientes por SO -->
 <p>
-  <a href="https://github.com/crissacio/localdrop/releases/download/v1.0_Windows/localdrop-win.exe">
+  <a href="https://github.com/crissacio/localdrop/releases/latest/download/localdrop-win.exe">
     <img src="https://img.shields.io/badge/Windows-Descargar_.exe-0078D6?style=for-the-badge&logo=windows&logoColor=white" alt="Descargar Windows">
   </a>
   &nbsp;&nbsp;
-  <a href="https://github.com/crissacio/localdrop/releases/download/v1.0_Mac/localdrop-mac.zip">
+  <a href="https://github.com/crissacio/localdrop/releases/latest/download/localdrop-mac.zip">
     <img src="https://img.shields.io/badge/macOS-Descargar_.zip-000000?style=for-the-badge&logo=apple&logoColor=white" alt="Descargar Mac">
   </a>
   &nbsp;&nbsp;
-  <a href="https://github.com/crissacio/localdrop/releases/download/v1.0_Linux/localdrop-linux">
+  <a href="https://github.com/crissacio/localdrop/releases/latest/download/localdrop-linux">
     <img src="https://img.shields.io/badge/Linux-Descargar_Binario-FCC624?style=for-the-badge&logo=linux&logoColor=black" alt="Descargar Linux">
   </a>
 </p>
